@@ -1,4 +1,7 @@
-﻿using OpenQA.Selenium;
+﻿// Refactored .NET capability handling
+// Documentation: https://help.crossbrowsertesting.com/faqs/testing/why-do-i-get-the-message-use-of-desiredcapabilities-has-been-deprecated-in-c/
+
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
 
@@ -13,14 +16,15 @@ namespace Amido.Testing.Core.Selenium.Factory
 
         private static IWebDriver RemoteWebDriver(BrowserStack browserStack)
         {
-            var caps = new DesiredCapabilities();
-            caps.SetCapability("browserstack.user", browserStack.User.Value);
-            caps.SetCapability("browserstack.key", browserStack.Key.Value);
-            caps.SetCapability("browserstack.debug", true);
+            var caps = new RemoteSessionSettings();
+
+            caps.AddMetadataSetting("browserstack.user", browserStack.User.Value);
+            caps.AddMetadataSetting("browserstack.key", browserStack.Key.Value);
+            caps.AddMetadataSetting("browserstack.debug", true);
 
             foreach (var key in browserStack.Environment.Value.AllKeys)
             {
-                caps.SetCapability(key, browserStack.Environment.Value[key]);
+                caps.AddMetadataSetting(key, browserStack.Environment.Value[key]);
             }
 
             return new RemoteWebDriver(browserStack.Url.Value, caps);
